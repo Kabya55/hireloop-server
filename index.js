@@ -197,3 +197,29 @@ async function run() {
       },
     );
 
+    // company related apis
+    app.post("/api/companies", async (req, res) => {
+      const company = req.body;
+      const newCompany = {
+        ...company,
+        createdAt: new Date(),
+      };
+      const result = await companyCollection.insertOne(newCompany);
+      res.send(result);
+    });
+
+    app.get("/api/companies", veryfyToken, async (req, res) => {
+      const cursor = companyCollection.find();
+      const companies = await cursor.toArray();
+
+      for (const company of companies) {
+        const filter = {
+          companyId: company._id.toString(),
+        };
+        const jobCount = await jobCollection.countDocuments(filter);
+        company.jobCount = jobCount;
+      }
+
+      res.send(companies);
+    });
+
