@@ -161,3 +161,39 @@ async function run() {
       res.send(result);
     });
 
+    // application related apis
+    app.post("/api/applications", async (req, res) => {
+      const application = req.body;
+      const newApplication = {
+        ...application,
+        createdAt: new Date(),
+      };
+      const result = await applicationCollection.insertOne(newApplication);
+      res.send(result).json();
+    });
+
+    app.get(
+      "/api/applications",
+      veryfyToken,
+      veryfySeeker,
+      async (req, res) => {
+        const query = {};
+
+        if (req.query.applicantId) {
+          query.applicantId = req.query.applicantId;
+
+          // check whether asking for user information or someone else
+          // console.log(req.user, req.query.applicantId);
+          if (req.user?._id.toString() !== req.query.applicantId) {
+            return res.status(403).send({ message: "forbidden access" });
+          }
+        }
+        if (req.query.jobId) {
+          query.jobId = req.query.jobId;
+        }
+        const cursor = applicationCollection.find(query);
+        const result = await cursor.toArray();
+        res.send(result);
+      },
+    );
+
