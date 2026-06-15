@@ -96,3 +96,15 @@ async function run() {
       next();
     };
 
+    // job related apis
+
+    app.post("/api/jobs", async (req, res) => {
+      const job = req.body;
+      const newJob = {
+        ...job,
+        createdAt: new Date(),
+      };
+      const result = await jobCollection.insertOne(newJob);
+      res.send(result);
+    });
+
