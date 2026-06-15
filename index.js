@@ -277,3 +277,23 @@ async function run() {
       res.send(plan);
     });
 
+    // Subscription
+    app.post("/api/subscriptions", async (req, res) => {
+      const subscription = req.body;
+      const newSubscription = {
+        ...subscription,
+        createdAt: new Date(),
+      };
+      const result = await subscriptionCollection.insertOne(newSubscription);
+
+      // update the user information
+      const filter = { email: subscription.email };
+      const updateDoc = {
+        $set: {
+          plan: subscription.planId,
+        },
+      };
+      const updatedUser = await usersCollection.updateOne(filter, updateDoc);
+      res.send(updatedUser);
+    });
+
