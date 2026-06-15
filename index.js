@@ -109,7 +109,7 @@ async function run() {
     });
 
     app.get("/api/jobs", async (req, res) => {
-      console.log("server side Quary", req.query);
+      // console.log("server side Quary", req.query);
       const query = {};
       // job filter related query
       if (req.query?.search) {
@@ -298,7 +298,7 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!",
     );
@@ -312,4 +312,3 @@ run().catch(console.dir);
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
-
