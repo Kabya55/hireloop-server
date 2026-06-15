@@ -38,3 +38,39 @@ async function run() {
     const usersCollection = database.collection("user");
     const sessionCollection = database.collection("session");
 
+    // verify token
+    const veryfyToken = async (req, res, next) => {
+      // console.log("header", req.headers);
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return res.status(401).send({ message: "unauthorized access" });
+      }
+
+      const token = authHeader.split(" ")[1];
+      // console.log(token);
+
+      if (!token) {
+        return res.status(401).send({ message: "unauthorized access" });
+      }
+
+      const query = { token: token };
+      const session = await sessionCollection.findOne(query);
+
+      // console.log("session of the user", session);
+
+      const userId = session?.userId;
+      // console.log("user id of the session", userId);
+
+      const userQuery = {
+        _id: new ObjectId(userId),
+      };
+
+      const user = await usersCollection.findOne(userQuery);
+      // console.log("user of the session", user);
+
+      // set data in the req object
+      req.user = user;
+
+      next();
+    };
+
